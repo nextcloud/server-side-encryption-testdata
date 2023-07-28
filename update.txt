@@ -1,0 +1,112 @@
+export VERSION=27.0.0
+
+$ mkdir -p ~/podman/nextcloud
+$ mkdir -p ./$VERSION/master ./$VERSION/original ./$VERSION/pubshare ./$VERSION/recovery ./$VERSION/user
+$ podman run -d -p 8080:80 -v ~/podman/nextcloud:/var/www/html --name nextcloud docker.io/library/nextcloud:$VERSION
+
+http://macmini:8080/
+
+=> create admin user: admin:admin
+
+$ sudo cp -R ~/podman/nextcloud/config/config.php ./$VERSION/
+$ sudo cp -R ~/podman/nextcloud/data/ ./$VERSION/original/
+$ sudo chown -R kenny: ./$VERSION/
+
+$ mv ./$VERSION/original/data/* ./$VERSION/original/
+$ rm -rf ./$VERSION/original/data/
+$ rm ./$VERSION/original/*
+$ rmdir ./$VERSION/original/admin/cache/
+$ rm -rf ./$VERSION/original/appdata_*
+$ rm -rf ./$VERSION/original/files_external/
+
+http://macmini:8080/index.php/settings/apps
+
+=> enable Default encryption module
+
+$ podman exec -it nextcloud bash
+$ su -s /bin/bash www-data
+$ ./occ encryption:enable
+$ ./occ encryption:disable-master-key
+
+=> logout
+=> login
+
+$ ./occ encryption:encrypt-all
+$ exit
+$ exit
+
+http://macmini:8080/settings/admin/security
+
+=> enable recovery key: recovery:recovery
+
+http://macmini:8080/settings/user/security
+
+=> enable recovery key
+
+http://macmini:8080/index.php/apps/files/?dir=/&fileid=2
+
+=> share all files and folders as external links
+
+$ sudo cp -R ~/podman/nextcloud/data/ ./$VERSION/user/
+$ sudo chown -R kenny: ./$VERSION/
+
+$ mv ./$VERSION/user/data/* ./$VERSION/user/
+$ rm -rf ./$VERSION/user/data/
+$ rm ./$VERSION/user/*
+$ rmdir ./$VERSION/user/admin/cache/
+$ rm -rf ./$VERSION/user/appdata_*
+$ rm -rf ./$VERSION/user/files_external/
+$ find ./$VERSION/user/ -name "master_*.*" -print0 | xargs -0 -n1 rm
+$ cp -R ./$VERSION/user/* ./$VERSION/pubshare/
+$ cp -R ./$VERSION/user/* ./$VERSION/recovery/
+$ find ./$VERSION/pubshare/ -name "admin*.*" -print0 | xargs -0 -n1 rm
+$ find ./$VERSION/pubshare/ -name "recoveryKey_*.*" -print0 | xargs -0 -n1 rm
+$ find ./$VERSION/recovery/ -name "admin*.*" -print0 | xargs -0 -n1 rm
+$ find ./$VERSION/recovery/ -name "pubShare_*.*" -print0 | xargs -0 -n1 rm
+$ find ./$VERSION/user/ -name "pubShare_*.*" -print0 | xargs -0 -n1 rm
+$ find ./$VERSION/user/ -name "recoveryKey_*.*" -print0 | xargs -0 -n1 rm
+$ rmdir ./$VERSION/pubshare/admin/files_encryption/OC_DEFAULT_MODULE/
+$ rmdir ./$VERSION/recovery/admin/files_encryption/OC_DEFAULT_MODULE/
+$ rmdir ./$VERSION/user/files_encryption/OC_DEFAULT_MODULE/
+$ rmdir ./$VERSION/user/files_encryption/
+
+$ podman stop nextcloud && podman rm nextcloud
+$ sudo rm -rf ~/podman/nextcloud/
+$ mkdir ~/podman/nextcloud
+$ podman run -d -p 8080:80 -v ~/podman/nextcloud:/var/www/html --name nextcloud docker.io/library/nextcloud:$VERSION
+
+http://macmini:8080/
+
+=> create admin user: admin:admin
+
+$ sudo cp ./$VERSION/config.php ~/podman/nextcloud/config/
+
+=> logout
+=> login
+
+http://macmini:8080/index.php/settings/apps
+
+=> enable Default encryption module
+
+$ podman exec -it nextcloud bash
+$ su -s /bin/bash www-data
+$ ./occ encryption:enable
+$ ./occ encryption:encrypt-all
+$ exit
+$ exit
+
+$ sudo cp -R ~/podman/nextcloud/data/ ./$VERSION/master/
+$ sudo chown -R kenny: ./$VERSION/
+
+$ mv ./$VERSION/master/data/* ./$VERSION/master/
+$ rm -rf ./$VERSION/master/data/
+$ rm ./$VERSION/master/*
+$ rmdir ./$VERSION/master/admin/cache/
+$ rm -rf ./$VERSION/master/appdata_*
+$ rm -rf ./$VERSION/master/files_external/
+$ find ./$VERSION/master/ -name "pubShare_*.*" -print0 | xargs -0 -n1 rm
+$ rmdir ./$VERSION/master/admin/files_encryption/OC_DEFAULT_MODULE/
+
+$ podman stop nextcloud && podman rm nextcloud
+$ sudo rm -rf ~/podman/nextcloud/
+
