@@ -1,5 +1,6 @@
-export VERSION=27.0.0
+export VERSION=28.0.0
 
+$ cd ./nextcloud
 $ mkdir -p ~/podman/nextcloud
 $ mkdir -p ./$VERSION/master ./$VERSION/original ./$VERSION/pubshare ./$VERSION/recovery ./$VERSION/user
 $ podman run -d -p 8080:80 -v ~/podman/nextcloud:/var/www/html --name nextcloud docker.io/library/nextcloud:$VERSION
@@ -19,7 +20,7 @@ $ rmdir ./$VERSION/original/admin/cache/
 $ rm -rf ./$VERSION/original/appdata_*
 $ rm -rf ./$VERSION/original/files_external/
 
-http://macmini:8080/index.php/settings/apps
+http://macmini:8080/settings/apps/disabled/encryption
 
 => enable Default encryption module
 
@@ -84,7 +85,7 @@ $ sudo cp ./$VERSION/config.php ~/podman/nextcloud/config/
 => logout
 => login
 
-http://macmini:8080/index.php/settings/apps
+http://macmini:8080/settings/apps/disabled/encryption
 
 => enable Default encryption module
 
