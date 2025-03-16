@@ -1,6 +1,6 @@
-export VERSION=29.0.0
+$ export VERSION=30.0.0
 
-$ cd ./nextcloud
+$ cd ~/nextcloud
 $ mkdir -p ~/podman/nextcloud
 $ mkdir -p ./$VERSION/master ./$VERSION/original ./$VERSION/pubshare ./$VERSION/recovery ./$VERSION/user
 $ podman run -d -p 8080:80 -v ~/podman/nextcloud:/var/www/html --name nextcloud docker.io/library/nextcloud:$VERSION
