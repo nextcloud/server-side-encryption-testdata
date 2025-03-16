@@ -1,4 +1,4 @@
-$ export VERSION=30.0.0
+$ export VERSION=31.0.0
 
 $ cd ~/nextcloud
 $ mkdir -p ~/podman/nextcloud
