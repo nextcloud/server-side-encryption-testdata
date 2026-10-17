@@ -1,13 +1,18 @@
-$ export VERSION=31.0.0
+$ export VERSION=35.0.0
 
 $ cd ~/nextcloud
 $ mkdir -p ~/podman/nextcloud
 $ mkdir -p ./$VERSION/master ./$VERSION/original ./$VERSION/pubshare ./$VERSION/recovery ./$VERSION/user
+$ podman image pull docker.io/library/nextcloud:$VERSION
 $ podman run -d -p 8080:80 -v ~/podman/nextcloud:/var/www/html --name nextcloud docker.io/library/nextcloud:$VERSION
 
 http://macmini:8080/
 
 => create admin user: admin:admin
+
+http://macmini:8080/index.php/apps/files/?dir=/&fileid=2
+
+=> Readme is manipulated by simply visiting the folder
 
 $ sudo cp -R ~/podman/nextcloud/config/config.php ./$VERSION/
 $ sudo cp -R ~/podman/nextcloud/data/ ./$VERSION/original/
@@ -17,6 +22,7 @@ $ mv ./$VERSION/original/data/* ./$VERSION/original/
 $ rm -rf ./$VERSION/original/data/
 $ rm ./$VERSION/original/*
 $ rmdir ./$VERSION/original/admin/cache/
+$ rm -rf ./$VERSION/original/admin/files_versions/
 $ rm -rf ./$VERSION/original/appdata_*
 $ rm -rf ./$VERSION/original/files_external/
 
@@ -57,6 +63,7 @@ $ rm ./$VERSION/user/*
 $ rmdir ./$VERSION/user/admin/cache/
 $ rm -rf ./$VERSION/user/appdata_*
 $ rm -rf ./$VERSION/user/files_external/
+$ rm -rf ./$VERSION/user/files_versions/
 $ find ./$VERSION/user/ -name "master_*.*" -print0 | xargs -0 -n1 rm
 $ cp -R ./$VERSION/user/* ./$VERSION/pubshare/
 $ cp -R ./$VERSION/user/* ./$VERSION/recovery/
@@ -85,6 +92,10 @@ $ sudo cp ./$VERSION/config.php ~/podman/nextcloud/config/
 => logout
 => login
 
+http://macmini:8080/index.php/apps/files/?dir=/&fileid=2
+
+=> Readme is manipulated by simply visiting the folder
+
 http://macmini:8080/settings/apps/disabled/encryption
 
 => enable Default encryption module
@@ -107,6 +118,7 @@ $ rm -rf ./$VERSION/master/appdata_*
 $ rm -rf ./$VERSION/master/files_external/
 $ find ./$VERSION/master/ -name "pubShare_*.*" -print0 | xargs -0 -n1 rm
 $ rmdir ./$VERSION/master/admin/files_encryption/OC_DEFAULT_MODULE/
+$ rm -rf ./$VERSION/master/admin/files_versions/
 
 $ podman stop nextcloud && podman rm nextcloud
 $ sudo rm -rf ~/podman/nextcloud/
